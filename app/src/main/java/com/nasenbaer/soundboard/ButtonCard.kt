@@ -15,13 +15,13 @@ import androidx.compose.ui.unit.dp
 import com.nasenbaer.soundboard.ui.theme.SoundBoardTheme
 
 @Composable
-fun ButtonCard(name: String, modifier: Modifier = Modifier) {
+fun ButtonCard(name: String, onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
             Text(modifier = Modifier.padding(all = 24.dp), text = name)
         }
         ElevatedButton(
-            onClick = { /*ToDo*/ },
+            onClick = { onClick() },
             elevation = ButtonDefaults.buttonElevation(8.dp),
             modifier = Modifier
                 .weight(1f)
@@ -37,10 +37,10 @@ fun ButtonCard(name: String, modifier: Modifier = Modifier) {
 fun PreviewButtonSection() {
     SoundBoardTheme {
         Column {
+            /*ButtonCard("Zonk!")
             ButtonCard("Zonk!")
             ButtonCard("Zonk!")
-            ButtonCard("Zonk!")
-            ButtonCard("Zonk!")
+            ButtonCard("Zonk!")*/
         }
     }
 }

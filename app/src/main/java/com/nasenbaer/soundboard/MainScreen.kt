@@ -1,12 +1,9 @@
 package com.nasenbaer.soundboard
 
-import android.content.res.Configuration.UI_MODE_NIGHT_MASK
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -19,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,7 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.nasenbaer.soundboard.ui.theme.SoundBoardTheme
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +32,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(drawerState: DrawerState, coroutineScope: CoroutineScope) {
+fun MainScreen(viewModel: MainViewModel, drawerState: DrawerState, coroutineScope: CoroutineScope) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,8 +61,9 @@ fun MainScreen(drawerState: DrawerState, coroutineScope: CoroutineScope) {
                 .padding(innerPadding),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            ButtonCard(name = "Zonk!")
-            ButtonCard(name = "Badum")
+            viewModel.getSounds().forEach {
+                ButtonCard(name = it.value) { viewModel.play() }
+            }
         }
     }
 }
@@ -76,10 +72,13 @@ fun MainScreen(drawerState: DrawerState, coroutineScope: CoroutineScope) {
 @Preview(uiMode = UI_MODE_NIGHT_NO)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun PreviewMainScreen(){
-    val  drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+fun PreviewMainScreen() {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
+
     SoundBoardTheme {
-        MainScreen(drawerState = drawerState , coroutineScope = coroutineScope)
+        // ToDo: Fix
+        // see: https://developer.android.com/jetpack/compose/tooling/previews
+        //MainScreen(drawerState = drawerState , coroutineScope = coroutineScope)
     }
 }
