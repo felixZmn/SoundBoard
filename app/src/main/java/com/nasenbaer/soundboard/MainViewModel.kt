@@ -10,18 +10,14 @@ import androidx.media3.exoplayer.ExoPlayer
 
 @OptIn(UnstableApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private val application : Application
     val player = ExoPlayer.Builder(application.applicationContext).build()
 
     init {
-        player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(R.raw.badumtss)))
-        player.prepare()
-    }
-
-    fun play() {
-        player.play()
+        this.application = application
     }
 
     fun getSounds(): Map<Int, String> {
-        return mapOf(R.raw.zonk to "Zonk!", R.raw.badumtss to "Badum")
+        return mapOf(R.raw.zonk to "Zonk!", R.raw.badumtss to "Badum", R.raw.jeopardy to "Jeopardy", R.raw.shutdown to "Shutdown")
     }
 }

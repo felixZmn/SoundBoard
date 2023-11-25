@@ -26,11 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.RawResourceDataSource
 import com.nasenbaer.soundboard.ui.theme.SoundBoardTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@androidx.annotation.OptIn(UnstableApi::class) @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel, drawerState: DrawerState, coroutineScope: CoroutineScope) {
     Scaffold(
@@ -62,7 +65,16 @@ fun MainScreen(viewModel: MainViewModel, drawerState: DrawerState, coroutineScop
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             viewModel.getSounds().forEach {
-                ButtonCard(name = it.value) { viewModel.play() }
+                ButtonCard(name = it.value) {
+                    println("Button " + it.key + " pressed")
+                    if (viewModel.player.isPlaying){
+                        viewModel.player.stop()
+                    } else {
+                        viewModel.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(it.key)))
+                        viewModel.player.prepare()
+                        viewModel.player.play()
+                    }
+                }
             }
         }
     }
