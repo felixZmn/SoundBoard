@@ -3,4 +3,5 @@
     <string name="top_bar_text">SoundBoard</string>
     <string name="volume">Volume</string>
     <string name="use_system_volume">Systemlautstärke verändern</string>
+    <string name="add_sound">Sound hinzufügen</string>
 </resources>

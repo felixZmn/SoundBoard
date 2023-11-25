@@ -1,4 +1,4 @@
-package com.nasenbaer.soundboard
+package com.nasenbaer.soundboard.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,10 +37,9 @@ fun ButtonCard(name: String, onClick: () -> Unit) {
 fun PreviewButtonSection() {
     SoundBoardTheme {
         Column {
-            /*ButtonCard("Zonk!")
-            ButtonCard("Zonk!")
-            ButtonCard("Zonk!")
-            ButtonCard("Zonk!")*/
+            ButtonCard("Zonk!") { println("text") }
+            ButtonCard("Zonk!") { println("text") }
+            ButtonCard("Zonk!") { println("text") }
         }
     }
 }
