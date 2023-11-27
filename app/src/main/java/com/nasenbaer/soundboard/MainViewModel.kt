@@ -13,12 +13,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val player = ExoPlayer.Builder(application.applicationContext).build()
 
     init {
-        player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(R.raw.badumtss)))
-        player.prepare()
+
     }
 
-    fun play() {
-        player.play()
+    fun play(id: Int) {
+        if (this.player.isPlaying){
+            this.player.stop()
+        }
+        this.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(id)))
+        this.player.prepare()
+        this.player.play()
     }
 
     fun getSounds(): Map<Int, String> {

@@ -86,7 +86,10 @@ fun StartScreenScaffold(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = MainScreen.Main.name) {
-                ButtonsScreen(viewModel = viewModel)
+                val sounds = viewModel.getSounds()
+                val buttonsAndActions = mutableMapOf<String, () -> Unit>()
+                sounds.forEach { (t, u) ->  buttonsAndActions[u] = { viewModel.play(t) }  }
+                ButtonsScreen(buttonsAndActions)
             }
         }
     }
