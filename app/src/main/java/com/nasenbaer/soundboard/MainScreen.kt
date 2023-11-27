@@ -70,7 +70,7 @@ fun StartScreenScaffold(
 ) {
     val showDialog = remember { mutableStateOf(false) }
     if(showDialog.value){
-        AddSoundDialog(viewModel = viewModel, save = { showDialog.value = false }, abort = {showDialog.value = false})
+        AddSoundDialog(save = { showDialog.value = false }, abort = {showDialog.value = false})
     }
 
     Scaffold(topBar = {
