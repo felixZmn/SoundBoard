@@ -4,4 +4,7 @@
     <string name="volume">Lautstärke</string>
     <string name="use_system_volume">Systemlautstärke verändern</string>
     <string name="add_sound">Sound hinzufügen</string>
+    <string name="save">Speichern</string>
+    <string name="add_sound_form_field_name">Name</string>
+    <string name="add_sound_form_field_file">Datei</string>
 </resources>

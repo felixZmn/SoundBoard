@@ -1,6 +1,7 @@
 package com.nasenbaer.soundboard
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,16 +82,18 @@ fun StartScreenScaffold(
             Icon(Icons.Default.Add, contentDescription = "Add")
         }
     }) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = MainScreen.Main.name,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(route = MainScreen.Main.name) {
-                val sounds = viewModel.getSounds()
-                val buttonsAndActions = mutableMapOf<String, () -> Unit>()
-                sounds.forEach { (t, u) ->  buttonsAndActions[u] = { viewModel.play(t) }  }
-                ButtonsScreen(buttonsAndActions)
+        Column(Modifier.padding(innerPadding)) {
+            NavHost(
+                navController = navController, startDestination = MainScreen.Main.name,
+                // "magic" margins to match the same spacing as in AddSoundDialog
+                modifier = Modifier.padding(top = 12.dp, end = 16.dp)
+            ) {
+                composable(route = MainScreen.Main.name) {
+                    val sounds = viewModel.getSounds()
+                    val buttonsAndActions = mutableMapOf<String, () -> Unit>()
+                    sounds.forEach { (t, u) -> buttonsAndActions[u] = { viewModel.play(t) } }
+                    ButtonsScreen(buttonsAndActions)
+                }
             }
         }
     }
