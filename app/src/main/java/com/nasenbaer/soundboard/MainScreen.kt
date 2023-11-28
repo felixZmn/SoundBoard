@@ -69,12 +69,12 @@ fun StartScreenScaffold(
     viewModel: MainViewModel
 ) {
     val showDialog = remember { mutableStateOf(false) }
-    if(showDialog.value){
-        AddSoundDialog(save = { showDialog.value = false }, abort = {showDialog.value = false})
+    if (showDialog.value) {
+        AddSoundDialog(save = { showDialog.value = false }, abort = { showDialog.value = false })
     }
 
     Scaffold(topBar = {
-        AppBar(currentScreen, coroutineScope, drawerState)
+        MainAppBar(currentScreen, coroutineScope, drawerState)
     }, floatingActionButton = {
         FloatingActionButton(onClick = { showDialog.value = true }) {
             Icon(Icons.Default.Add, contentDescription = "Add")
@@ -97,7 +97,7 @@ fun StartScreenScaffold(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun AppBar(
+private fun MainAppBar(
     currentScreen: MainScreen, coroutineScope: CoroutineScope, drawerState: DrawerState
 ) {
     TopAppBar(colors = TopAppBarDefaults.largeTopAppBarColors(
@@ -119,7 +119,7 @@ fun PreviewAppBar() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
-    AppBar(
+    MainAppBar(
         currentScreen = MainScreen.Main, coroutineScope = coroutineScope, drawerState = drawerState
     )
 }

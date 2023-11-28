@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SoundBoard</string>
     <string name="top_bar_text">SoundBoard</string>
-    <string name="volume">Volume</string>
+    <string name="volume">Lautstärke</string>
     <string name="use_system_volume">Systemlautstärke verändern</string>
     <string name="add_sound">Sound hinzufügen</string>
 </resources>

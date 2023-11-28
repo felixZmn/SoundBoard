@@ -10,11 +10,7 @@ import androidx.media3.exoplayer.ExoPlayer
 
 @OptIn(UnstableApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    val player = ExoPlayer.Builder(application.applicationContext).build()
-
-    init {
-
-    }
+    private val player = ExoPlayer.Builder(application.applicationContext).build()
 
     fun play(id: Int) {
         if (this.player.isPlaying){

@@ -38,8 +38,6 @@ fun PreviewButtonSection() {
     SoundBoardTheme {
         Column {
             ButtonCard("Zonk!") { println("text") }
-            ButtonCard("Zonk!") { println("text") }
-            ButtonCard("Zonk!") { println("text") }
         }
     }
 }
