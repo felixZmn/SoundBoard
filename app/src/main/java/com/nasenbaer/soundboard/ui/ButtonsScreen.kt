@@ -7,11 +7,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ButtonsScreen(stuff: Map<String, () -> Unit>) {
+fun ButtonsScreen(contents: Map<String, () -> Unit>) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        stuff.forEach {
+        contents.forEach {
             ButtonCard(name = it.key, onClick = it.value)
         }
     }
@@ -22,5 +22,5 @@ fun ButtonsScreen(stuff: Map<String, () -> Unit>) {
 @Composable
 fun PreviewButtonScreen() {
     val data = mapOf("Button 1" to { print("Test 1") }, "Button 2" to { print("Test 2") })
-    ButtonsScreen(stuff = data)
+    ButtonsScreen(contents = data)
 }
