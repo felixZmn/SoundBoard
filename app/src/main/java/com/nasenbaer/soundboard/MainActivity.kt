@@ -10,6 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import com.nasenbaer.soundboard.ui.theme.SoundBoardTheme
 
+/*
+ * Note:
+ * Needed permission to import sounds: ACTION_GET_CONTENT
+ * further reading: https://developer.android.com/topic/libraries/architecture/datastore
+ */
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

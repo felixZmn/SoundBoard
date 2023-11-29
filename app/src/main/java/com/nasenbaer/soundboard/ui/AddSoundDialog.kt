@@ -1,5 +1,10 @@
 package com.nasenbaer.soundboard.ui
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,17 +26,29 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toFile
 import com.nasenbaer.soundboard.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
+    var pickedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+        println("selected file URI ${it.data?.data}")
+        pickedImageUri = it.data?.data
+    }
+
     Dialog(
         onDismissRequest = { save() }, properties = DialogProperties(
             usePlatformDefaultWidth = false
@@ -50,13 +67,19 @@ fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text(text = stringResource(id = R.string.add_sound_form_field_name)) })
                         TextField(
-                            value = "",
+                            value = if (pickedImageUri.toString() == "null") "" else pickedImageUri.toString(),
                             enabled = false,
                             onValueChange = {},
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
-                                .clickable(onClick = { println("clicked!") }),
+                                .clickable(onClick = {
+                                    println("clicked!")
+                                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                    }
+                                    launcher.launch(intent)
+                                }),
                             label = {
                                 Text(text = stringResource(id = R.string.add_sound_form_field_file))
                             },
