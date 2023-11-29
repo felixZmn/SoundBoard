@@ -11,17 +11,21 @@ import androidx.media3.exoplayer.ExoPlayer
 @OptIn(UnstableApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val player = ExoPlayer.Builder(application.applicationContext).build()
+    private var currentId = 0
 
     fun play(id: Int) {
         if (this.player.isPlaying){
             this.player.stop()
         }
-        this.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(id)))
-        this.player.prepare()
-        this.player.play()
+        if (id != currentId){
+            this.currentId = id
+            this.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(id)))
+            this.player.prepare()
+            this.player.play()
+        }
     }
 
     fun getSounds(): Map<Int, String> {
-        return mapOf(R.raw.zonk to "Zonk!", R.raw.badumtss to "Badum")
+        return mapOf(R.raw.zonk to "Zonk!", R.raw.badumtss to "Badum", R.raw.jeopardy to "Jeopardy!", R.raw.shutdown to "Shutdown")
     }
 }
