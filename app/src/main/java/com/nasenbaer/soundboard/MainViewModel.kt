@@ -14,10 +14,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var currentId = 0
 
     fun play(id: Int) {
-        if (this.player.isPlaying){
+        if (this.player.isPlaying) {
             this.player.stop()
         }
-        if (id != currentId){
+        if (id != currentId) {
             this.currentId = id
             this.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(id)))
             this.player.prepare()
@@ -26,6 +26,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun getSounds(): Map<Int, String> {
-        return mapOf(R.raw.zonk to "Zonk!", R.raw.badumtss to "Badum", R.raw.jeopardy to "Jeopardy!", R.raw.shutdown to "Shutdown")
+        return mapOf(
+            R.raw.zonk to "Zonk!",
+            R.raw.badumtss to "Badum",
+            R.raw.jeopardy to "Jeopardy!",
+            R.raw.shutdown to "Shutdown"
+        )
     }
 }

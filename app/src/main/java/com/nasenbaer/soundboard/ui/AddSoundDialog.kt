@@ -36,7 +36,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.net.toFile
 import com.nasenbaer.soundboard.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +43,8 @@ import com.nasenbaer.soundboard.R
 fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
     var pickedImageUri by remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) {
+        ActivityResultContracts.StartActivityForResult()
+    ) {
         println("selected file URI ${it.data?.data}")
         pickedImageUri = it.data?.data
     }
@@ -75,7 +75,10 @@ fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
                                 .padding(top = 8.dp)
                                 .clickable(onClick = {
                                     println("clicked!")
-                                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI).apply {
+                                    val intent = Intent(
+                                        Intent.ACTION_OPEN_DOCUMENT,
+                                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                                    ).apply {
                                         addCategory(Intent.CATEGORY_OPENABLE)
                                     }
                                     launcher.launch(intent)
