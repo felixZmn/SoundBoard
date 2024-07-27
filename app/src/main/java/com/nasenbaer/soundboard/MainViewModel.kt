@@ -32,13 +32,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun play(id: Int) {
         if (this.player.isPlaying) {
             this.player.stop()
+            return
         }
-        if (id != currentId) {
-            this.currentId = id
-            this.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(id)))
-            this.player.prepare()
-            this.player.play()
-        }
+        this.currentId = id
+        this.player.setMediaItem(MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(id)))
+        this.player.prepare()
+        this.player.play()
     }
 
     fun getSounds(): Map<Int, String> {
