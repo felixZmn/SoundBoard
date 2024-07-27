@@ -32,16 +32,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.nasenbaer.soundboard.MainViewModel
 import com.nasenbaer.soundboard.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
-    var pickedImageUri by remember { mutableStateOf<Uri?>(null) }
+fun AddSoundDialog(viewModel: MainViewModel) {
+    var pickedImageUri by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
+    var name by remember { mutableStateOf("") }
+
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
@@ -49,21 +51,29 @@ fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
         pickedImageUri = it.data?.data
     }
 
+    val openSoundIntent = Intent(
+        Intent.ACTION_OPEN_DOCUMENT,
+        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+    ).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+    }
+
     Dialog(
-        onDismissRequest = { save() }, properties = DialogProperties(
+        onDismissRequest = { viewModel.abort() },
+        properties = DialogProperties(
             usePlatformDefaultWidth = false
         )
     ) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Scaffold(topBar = {
-                AddSoundTopBar(abort, save)
+                AddSoundTopBar({ viewModel.save(pickedImageUri!!, name);  }, { viewModel.abort() })
             }) { innerPadding ->
                 // padding to move below TopAppBar
                 Column(modifier = Modifier.padding(innerPadding)) {
                     // padding to set layout paddings
                     Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp)) {
-                        TextField(value = "",
-                            onValueChange = {},
+                        TextField(value = name,
+                            onValueChange = { name = it },
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text(text = stringResource(id = R.string.add_sound_form_field_name)) })
                         TextField(
@@ -74,21 +84,14 @@ fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
                                 .clickable(onClick = {
-                                    println("clicked!")
-                                    val intent = Intent(
-                                        Intent.ACTION_OPEN_DOCUMENT,
-                                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                                    ).apply {
-                                        addCategory(Intent.CATEGORY_OPENABLE)
-                                    }
-                                    launcher.launch(intent)
+                                    launcher.launch(openSoundIntent)
                                 }),
                             label = {
                                 Text(text = stringResource(id = R.string.add_sound_form_field_file))
                             },
                             trailingIcon = {
                                 IconButton(onClick = {
-                                    println("Icon Button Clicked")
+                                    launcher.launch(openSoundIntent)
                                 }) {
                                     Icon(
                                         Icons.Default.AudioFile,
@@ -119,7 +122,7 @@ fun AddSoundDialog(save: () -> Unit, abort: () -> Unit) {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun AddSoundTopBar(abort: () -> Unit, save: () -> Unit) {
+private fun AddSoundTopBar(save: () -> Unit, abort: () -> Unit) {
     TopAppBar(colors = TopAppBarDefaults.largeTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         titleContentColor = MaterialTheme.colorScheme.primary,
@@ -136,11 +139,4 @@ private fun AddSoundTopBar(abort: () -> Unit, save: () -> Unit) {
             )
         }
     })
-}
-
-
-@Preview
-@Composable
-fun PreviewAddSoundDialog() {
-    AddSoundDialog(save = {}, abort = {})
 }

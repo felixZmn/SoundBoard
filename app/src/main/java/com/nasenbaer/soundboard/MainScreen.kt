@@ -50,15 +50,14 @@ fun SoundBoardApp(
 fun StartScreenScaffold(
     navController: NavHostController, currentScreen: MainScreen, viewModel: MainViewModel
 ) {
-    val showDialog = remember { mutableStateOf(false) }
-    if (showDialog.value) {
-        AddSoundDialog(save = { showDialog.value = false }, abort = { showDialog.value = false })
+    viewModel.showDialog = remember { mutableStateOf(false) }
+    if (viewModel.showDialog.value) {
+        AddSoundDialog(viewModel)
     }
-
     Scaffold(topBar = {
         MainAppBar(currentScreen)
     }, floatingActionButton = {
-        FloatingActionButton(onClick = { showDialog.value = true }) {
+        FloatingActionButton(onClick = { viewModel.showDialog.value = true }) {
             Icon(Icons.Default.Add, contentDescription = "Add")
         }
     }) { innerPadding ->
