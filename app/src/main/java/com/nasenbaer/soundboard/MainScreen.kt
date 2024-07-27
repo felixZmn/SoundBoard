@@ -85,7 +85,7 @@ private fun MainAppBar(
 ) {
     TopAppBar(colors = TopAppBarDefaults.largeTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
-        titleContentColor = MaterialTheme.colorScheme.primary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ), title = {
         Text(text = stringResource(currentScreen.title))
     })
