@@ -14,9 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,8 +28,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.nasenbaer.soundboard.data.Sound
 import com.nasenbaer.soundboard.ui.AddSoundDialog
 import com.nasenbaer.soundboard.ui.ButtonsScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 enum class MainScreen(@StringRes val title: Int) {
     Main(title = R.string.app_name)
@@ -46,14 +52,17 @@ fun SoundBoardApp(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun StartScreenScaffold(
     navController: NavHostController, currentScreen: MainScreen, viewModel: MainViewModel
 ) {
     viewModel.showDialog = remember { mutableStateOf(false) }
+    viewModel.soundsList = remember { mutableListOf() }
+
     if (viewModel.showDialog.value) {
         AddSoundDialog(viewModel)
     }
+
+
     Scaffold(topBar = {
         MainAppBar(currentScreen)
     }, floatingActionButton = {
@@ -68,10 +77,16 @@ fun StartScreenScaffold(
                 modifier = Modifier.padding(top = 12.dp, end = 16.dp)
             ) {
                 composable(route = MainScreen.Main.name) {
-                    val sounds = viewModel.getSounds()
-                    val buttonsAndActions = mutableMapOf<String, () -> Unit>()
-                    sounds.forEach { (t, u) -> buttonsAndActions[u] = { viewModel.play(t) } }
-                    ButtonsScreen(buttonsAndActions)
+
+                    LaunchedEffect(viewModel.soundsList) {
+                        viewModel.soundsList = viewModel.getSounds().toMutableList()
+                    }
+
+                    if (viewModel.soundsList != emptyList<Sound>()){
+                        val buttonsAndActions = mutableMapOf<String, () -> Unit>()
+                        viewModel.soundsList.forEach{(id, name, uri) -> buttonsAndActions[name.toString()] = {viewModel.play(id)} }
+                        ButtonsScreen(buttonsAndActions)
+                    }
                 }
             }
         }

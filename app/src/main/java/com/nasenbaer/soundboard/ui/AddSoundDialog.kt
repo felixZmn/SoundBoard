@@ -66,7 +66,7 @@ fun AddSoundDialog(viewModel: MainViewModel) {
     ) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Scaffold(topBar = {
-                AddSoundTopBar({ viewModel.save(pickedImageUri!!, name);  }, { viewModel.abort() })
+                AddSoundTopBar({ viewModel.save(pickedImageUri!!, name); }, { viewModel.abort() })
             }) { innerPadding ->
                 // padding to move below TopAppBar
                 Column(modifier = Modifier.padding(innerPadding)) {
