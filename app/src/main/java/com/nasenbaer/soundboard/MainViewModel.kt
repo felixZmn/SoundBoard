@@ -29,9 +29,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val player = ExoPlayer.Builder(application.applicationContext).build()
     private var currentId = 0
 
-
     @SuppressLint("Range")
-    fun save(path: Uri, name: String){
+    fun saveSound(path: Uri, name: String){
         val context = getApplication<Application>().applicationContext
         val contentResolver = context.contentResolver
 
@@ -51,8 +50,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         fos.close()
 
         viewModelScope.launch {
-            var newSound = Sound(name, displayName)
-            var id = AppDatabase
+            val newSound = Sound(name, displayName)
+            val id = AppDatabase
                 .getInstance(context)
                 .soundDao()
                 .insertAll(newSound)
@@ -63,7 +62,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun abort(){
         showDialog.value = false
-        println("abort")
     }
 
     fun play(id: Int) {
@@ -89,8 +87,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         this.player.play()
     }
 
-    suspend fun getSounds(): List<Sound> {
+    suspend fun loadSounds() {
         val deferred: Deferred<List<Sound>> = viewModelScope.async { AppDatabase.getInstance(getApplication<Application>().applicationContext).soundDao().getAll() }
-        return deferred.await()
+        val data = deferred.await()
+
+        data.forEach { sound -> soundsList.add(sound) }
     }
 }

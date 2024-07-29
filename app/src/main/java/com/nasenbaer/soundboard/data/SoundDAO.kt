@@ -17,5 +17,5 @@ interface SoundDAO {
     suspend fun insertAll(vararg users: Sound) : Array<Long>
 
     @Delete
-    suspend fun delete(user: Sound)
+    suspend fun delete(sound: Sound)
 }

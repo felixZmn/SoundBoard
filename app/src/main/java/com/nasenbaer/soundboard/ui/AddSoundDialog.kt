@@ -46,17 +46,12 @@ fun AddSoundDialog(viewModel: MainViewModel) {
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
-        println("selected file URI ${it.data?.data}")
-        pickedImageUri = it.data?.data
-    }
+    ) { pickedImageUri = it.data?.data }
 
     val openSoundIntent = Intent(
         Intent.ACTION_OPEN_DOCUMENT,
         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-    ).apply {
-        addCategory(Intent.CATEGORY_OPENABLE)
-    }
+    ).apply { addCategory(Intent.CATEGORY_OPENABLE) }
 
     Dialog(
         onDismissRequest = { viewModel.abort() },
@@ -66,7 +61,7 @@ fun AddSoundDialog(viewModel: MainViewModel) {
     ) {
         Surface(modifier = Modifier.fillMaxSize()) {
             Scaffold(topBar = {
-                AddSoundTopBar({ viewModel.save(pickedImageUri!!, name); }, { viewModel.abort() })
+                AddSoundTopBar({ viewModel.saveSound(pickedImageUri!!, name); }, { viewModel.abort() })
             }) { innerPadding ->
                 // padding to move below TopAppBar
                 Column(modifier = Modifier.padding(innerPadding)) {
@@ -103,16 +98,13 @@ fun AddSoundDialog(viewModel: MainViewModel) {
                             // see: https://issuetracker.google.com/issues/172154008
                             colors = TextFieldDefaults.textFieldColors(
                                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                //disabledBorderColor = MaterialTheme.colorScheme.outline,
                                 disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-
                         )
-
                     }
                 }
             }
