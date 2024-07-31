@@ -1,6 +1,5 @@
 package com.nasenbaer.soundboard
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.net.Uri
@@ -29,38 +28,44 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val player = ExoPlayer.Builder(application.applicationContext).build()
     private var currentId = 0
 
-    @SuppressLint("Range")
-    fun saveSound(path: Uri, name: String){
+    fun saveSound(path: Uri, name: String): Int {
         val context = getApplication<Application>().applicationContext
         val contentResolver = context.contentResolver
 
         showDialog.value = false
 
-        var displayName = ""
-
+        var fileName = ""
         contentResolver.query(path, null, null, null, null, null)?.use {
-            if (it.moveToFirst()){
-                displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            if (!it.moveToFirst()) {
+                return -1
             }
+            val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (index < 0) {
+                return -1
+            }
+            fileName = it.getString(index)
         }
 
-        val bytes = contentResolver.openInputStream(path)?.readBytes()
-        val fos = context.openFileOutput(displayName, Context.MODE_PRIVATE)
+        if (name == "" || path.toString() == "") return -1
+
+        val inputStream = contentResolver.openInputStream(path)
+        val bytes = inputStream?.readBytes() ?: return -1
+
+        val fos = context.openFileOutput(fileName, Context.MODE_PRIVATE)
         fos.write(bytes)
         fos.close()
 
         viewModelScope.launch {
-            val newSound = Sound(name, displayName)
-            val id = AppDatabase
-                .getInstance(context)
-                .soundDao()
-                .insertAll(newSound)
+            val newSound = Sound(name, fileName)
+            val id = AppDatabase.getInstance(context).soundDao().insertAll(newSound)
             newSound.id = id[0].toInt()
             soundsList.add(newSound)
         }
+
+        return 0
     }
 
-    fun abort(){
+    fun abort() {
         showDialog.value = false
     }
 
@@ -74,9 +79,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val context = getApplication<Application>().applicationContext
 
         // load file name to play
-        val fileName = runBlocking { coroutineScope {
-            AppDatabase.getInstance(context).soundDao().getByIds(arrayOf(id))[0].path
-        } } ?: return
+        val fileName = runBlocking {
+            coroutineScope {
+                AppDatabase.getInstance(context).soundDao().getByIds(arrayOf(id))[0].path
+            }
+        } ?: return
 
         this.currentId = id
         // prepare & launch player
@@ -88,7 +95,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun loadSounds() {
-        val deferred: Deferred<List<Sound>> = viewModelScope.async { AppDatabase.getInstance(getApplication<Application>().applicationContext).soundDao().getAll() }
+        val deferred: Deferred<List<Sound>> = viewModelScope.async {
+            AppDatabase.getInstance(getApplication<Application>().applicationContext).soundDao()
+                .getAll()
+        }
         val data = deferred.await()
 
         data.forEach { sound -> soundsList.add(sound) }

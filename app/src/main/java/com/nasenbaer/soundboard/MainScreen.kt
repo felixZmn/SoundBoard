@@ -10,6 +10,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,22 +46,26 @@ fun SoundBoardApp(
     val currentScreen = MainScreen.valueOf(
         backStackEntry?.destination?.route ?: MainScreen.Main.name
     )
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    StartScreenScaffold(navController, currentScreen, viewModel)
+    StartScreenScaffold(navController, currentScreen, snackbarHostState, viewModel)
 }
 
 @Composable
 fun StartScreenScaffold(
-    navController: NavHostController, currentScreen: MainScreen, viewModel: MainViewModel
+    navController: NavHostController,
+    currentScreen: MainScreen,
+    snackbarHostState: SnackbarHostState,
+    viewModel: MainViewModel
 ) {
     viewModel.showDialog = remember { mutableStateOf(false) }
     viewModel.soundsList = remember { mutableStateListOf<Sound>() }
 
     if (viewModel.showDialog.value) {
-        AddSoundDialog(viewModel)
+        AddSoundDialog(viewModel, snackbarHostState)
     }
 
-    Scaffold(topBar = {
+    Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
         MainAppBar(currentScreen)
     }, floatingActionButton = {
         FloatingActionButton(onClick = { viewModel.showDialog.value = true }) {
@@ -78,6 +84,7 @@ fun StartScreenScaffold(
                         viewModel.loadSounds()
                     }
 
+                    // ToDo: Allow duplicate names
                     val buttonsAndActions = mutableMapOf<String, () -> Unit>()
                     viewModel.soundsList.forEach { (id, name, uri) ->
                         buttonsAndActions[name.toString()] = { viewModel.play(id) }

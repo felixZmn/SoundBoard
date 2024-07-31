@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">SoundBoard</string>
-    <string name="top_bar_text">SoundBoard</string>
-    <string name="volume">Lautstärke</string>
-    <string name="use_system_volume">Systemlautstärke verändern</string>
     <string name="add_sound">Sound hinzufügen</string>
     <string name="save">Speichern</string>
     <string name="add_sound_form_field_name">Name</string>
     <string name="add_sound_form_field_file">Datei</string>
+    <string name="error_adding_sound">Fehler beim Speichern des Sounds!</string>
+    <string name="version">Version</string>
 </resources>
