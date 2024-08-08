@@ -33,6 +33,8 @@ import androidx.navigation.compose.rememberNavController
 import com.nasenbaer.soundboard.data.Sound
 import com.nasenbaer.soundboard.ui.AddSoundDialog
 import com.nasenbaer.soundboard.ui.ButtonsScreen
+import com.nasenbaer.soundboard.ui.DeleteDialog
+import kotlinx.coroutines.selects.select
 
 enum class MainScreen(@StringRes val title: Int) {
     Main(title = R.string.app_name)
@@ -58,17 +60,22 @@ fun StartScreenScaffold(
     snackbarHostState: SnackbarHostState,
     viewModel: MainViewModel
 ) {
-    viewModel.showDialog = remember { mutableStateOf(false) }
-    viewModel.soundsList = remember { mutableStateListOf<Sound>() }
+    viewModel.showAddSoundDialog = remember { mutableStateOf(false) }
+    viewModel.soundsList = remember { mutableStateListOf() }
 
-    if (viewModel.showDialog.value) {
+    val showConfirmDeleteDialog = remember { mutableStateOf(false) }
+
+    if (viewModel.showAddSoundDialog.value) {
         AddSoundDialog(viewModel, snackbarHostState)
+    }
+    if (showConfirmDeleteDialog.value) {
+        DeleteDialog(onConfirmation = { viewModel.deleteSelected(); showConfirmDeleteDialog.value = false }, onDismiss = {showConfirmDeleteDialog.value = false}, soundName = viewModel.selectedSound.name.toString())
     }
 
     Scaffold(snackbarHost = { SnackbarHost(hostState = snackbarHostState) }, topBar = {
         MainAppBar(currentScreen)
     }, floatingActionButton = {
-        FloatingActionButton(onClick = { viewModel.showDialog.value = true }) {
+        FloatingActionButton(onClick = { viewModel.showAddSoundDialog.value = true }) {
             Icon(Icons.Default.Add, contentDescription = "Add")
         }
     }) { innerPadding ->
@@ -84,12 +91,17 @@ fun StartScreenScaffold(
                         viewModel.loadSounds()
                     }
 
-                    // ToDo: Allow duplicate names
-                    val buttonsAndActions = mutableMapOf<String, () -> Unit>()
-                    viewModel.soundsList.forEach { (id, name, uri) ->
-                        buttonsAndActions[name.toString()] = { viewModel.play(id) }
+                    viewModel.soundsList.forEach { element ->
+                        element.play = {
+                            viewModel.selectedSound = element
+                            viewModel.playSelected()
+                        }
+                        element.delete = {
+                            viewModel.selectedSound = element
+                            showConfirmDeleteDialog.value = true
+                        }
                     }
-                    ButtonsScreen(buttonsAndActions)
+                    ButtonsScreen(viewModel.soundsList)
                 }
             }
         }

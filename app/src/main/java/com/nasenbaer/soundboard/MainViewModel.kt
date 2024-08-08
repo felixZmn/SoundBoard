@@ -15,24 +15,22 @@ import com.nasenbaer.soundboard.data.AppDatabase
 import com.nasenbaer.soundboard.data.Sound
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.File
 
 
 @OptIn(UnstableApi::class)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    lateinit var showDialog: MutableState<Boolean>
+    lateinit var showAddSoundDialog: MutableState<Boolean>
     lateinit var soundsList: MutableList<Sound>
     private val player = ExoPlayer.Builder(application.applicationContext).build()
-    private var currentId = 0
+    lateinit var selectedSound: Sound
 
     fun saveSound(path: Uri, name: String): Int {
         val context = getApplication<Application>().applicationContext
         val contentResolver = context.contentResolver
 
-        showDialog.value = false
+        showAddSoundDialog.value = false
 
         var fileName = ""
         contentResolver.query(path, null, null, null, null, null)?.use {
@@ -46,6 +44,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             fileName = it.getString(index)
         }
 
+        // add timestamp for unique file names
+        fileName = System.currentTimeMillis().toString() + fileName
+
         if (name == "" || path.toString() == "") return -1
 
         val inputStream = contentResolver.openInputStream(path)
@@ -56,7 +57,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         fos.close()
 
         viewModelScope.launch {
-            val newSound = Sound(name, fileName)
+            val newSound = Sound(name, context.filesDir.toString() + File.separatorChar + fileName)
             val id = AppDatabase.getInstance(context).soundDao().insertAll(newSound)
             newSound.id = id[0].toInt()
             soundsList.add(newSound)
@@ -66,32 +67,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun abort() {
-        showDialog.value = false
+        showAddSoundDialog.value = false
     }
 
-    fun play(id: Int) {
+    fun playSelected() {
         // stop player
         if (this.player.isPlaying) {
             this.player.stop()
             return
         }
 
-        val context = getApplication<Application>().applicationContext
-
-        // load file name to play
-        val fileName = runBlocking {
-            coroutineScope {
-                AppDatabase.getInstance(context).soundDao().getByIds(arrayOf(id))[0].path
-            }
-        } ?: return
-
-        this.currentId = id
         // prepare & launch player
-
-        val uri = Uri.parse(context.filesDir.toString() + File.separatorChar + fileName)
-        this.player.setMediaItem(MediaItem.fromUri(uri))
+        this.player.setMediaItem(MediaItem.fromUri(Uri.parse(selectedSound.path)))
         this.player.prepare()
         this.player.play()
+    }
+
+    fun deleteSelected() {
+        val file = File(selectedSound.path!!)
+        if (file.exists()){
+            file.delete()
+        }
+
+        val context = getApplication<Application>().applicationContext
+        viewModelScope.launch {
+            AppDatabase.getInstance(context).soundDao().delete(selectedSound)
+            soundsList.removeAt(soundsList.indexOf(selectedSound))
+        }
+
+
+        println("Deleted sound ${selectedSound.name} with id ${selectedSound.id}")
     }
 
     suspend fun loadSounds() {
